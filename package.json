@@ -1,0 +1,14 @@
+{
+    "name": "cockroach-poker-online",
+    "version": "1.0.0",
+    "description": "Cockroach Poker - Online Multiplayer Board Game",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "socket.io": "^4.6.1"
+    }
+}

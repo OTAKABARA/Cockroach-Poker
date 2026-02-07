@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cockroach Poker Online - แมลงสาบโป๊กเกอร์</title>
+    <meta name="description" content="เล่นเกม Cockroach Poker ออนไลน์ - เกมบลัฟสุดมันส์สำหรับ 4-10 คน">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Join/Create Screen -->
+        <div id="join-screen" class="screen active">
+            <div class="setup-card glass">
+                <h1 class="game-title">🪳 Cockroach Poker</h1>
+                <p class="subtitle">แมลงสาบโป๊กเกอร์ Online</p>
+
+                <div class="join-tabs">
+                    <button class="tab-btn active" data-tab="create">สร้างห้อง</button>
+                    <button class="tab-btn" data-tab="join">เข้าร่วมห้อง</button>
+                </div>
+
+                <div id="create-tab" class="tab-content active">
+                    <div class="form-group">
+                        <label>ชื่อของคุณ</label>
+                        <input type="text" id="create-player-name" placeholder="ใส่ชื่อของคุณ" maxlength="20">
+                    </div>
+                    <button id="create-room-btn" class="btn-primary">
+                        <span>🏠</span> สร้างห้องใหม่
+                    </button>
+                </div>
+
+                <div id="join-tab" class="tab-content">
+                    <div class="form-group">
+                        <label>ชื่อของคุณ</label>
+                        <input type="text" id="join-player-name" placeholder="ใส่ชื่อของคุณ" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label>รหัสห้อง</label>
+                        <input type="text" id="room-code-input" placeholder="XXXX" maxlength="4"
+                            style="text-transform: uppercase; text-align: center; font-size: 1.5rem; letter-spacing: 5px;">
+                    </div>
+                    <button id="join-room-btn" class="btn-primary">
+                        <span>🚪</span> เข้าร่วมห้อง
+                    </button>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div id="lobby-screen" class="screen">
+            <div class="lobby-card glass">
+                <h1 class="game-title">🪳 ห้องรอ</h1>
+                <div class="room-code-display">
+                    <span>รหัสห้อง:</span>
+                    <span id="lobby-room-code" class="room-code"></span>
+                    <button id="copy-code-btn" class="btn-icon" title="คัดลอก">📋</button>
+                </div>
+
+                <div class="players-list-section">
+                    <h3>ผู้เล่น (<span id="player-count">0</span>/10)</h3>
+                    <div id="lobby-players" class="lobby-players">
+                        <!-- Player list will be generated here -->
+                    </div>
+                </div>
+
+                <div id="lobby-actions" class="lobby-actions">
+                    <p class="waiting-text" id="waiting-text">รอ Host เริ่มเกม...</p>
+                    <button id="start-game-btn" class="btn-primary" style="display: none;">
+                        <span>🎮</span> เริ่มเกม
+                    </button>
+                </div>
+
+                <button id="leave-room-btn" class="btn-secondary">
+                    ออกจากห้อง
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <header class="game-header">
+                <div class="header-left">
+                    <h1>🪳 Cockroach Poker</h1>
+                    <span id="header-room-code" class="room-code-small"></span>
+                </div>
+                <div id="current-turn-display" class="turn-display"></div>
+            </header>
+
+            <main class="game-main">
+                <!-- Players Area -->
+                <div id="players-area" class="players-area">
+                    <!-- Player panels will be generated here -->
+                </div>
+
+                <!-- Current Player Hand -->
+                <div id="current-player-section" class="current-player-section glass">
+                    <div class="section-header">
+                        <h2 id="hand-owner-name">การ์ดในมือของคุณ</h2>
+                        <span id="hand-count" class="badge">0 ใบ</span>
+                    </div>
+                    <div id="player-hand" class="player-hand">
+                        <!-- Cards will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Game Log -->
+                <div class="game-log-section glass">
+                    <div class="section-header">
+                        <h2>📜 ประวัติการเล่น</h2>
+                    </div>
+                    <div id="game-log" class="game-log">
+                        <!-- Log entries will be added here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Send Card Modal -->
+        <div id="send-card-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>ส่งการ์ด</h2>
+                <div class="modal-body">
+                    <div class="selected-card-preview">
+                        <p>การ์ดที่เลือก:</p>
+                        <div id="selected-card-display" class="card-display"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ส่งให้:</label>
+                        <div id="target-player-options" class="target-options">
+                            <!-- Target player buttons will be generated -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ระบุว่าเป็น:</label>
+                        <div id="claim-animal-options" class="animal-options">
+                            <!-- Animal claim buttons will be generated -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-send-btn" class="btn-secondary">ยกเลิก</button>
+                    <button id="confirm-send-btn" class="btn-primary" disabled>ส่งการ์ด</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receive Card Modal -->
+        <div id="receive-card-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>คุณได้รับการ์ด!</h2>
+                <div class="modal-body">
+                    <p id="receive-message" class="receive-message"></p>
+                    <div id="claimed-animal-display" class="claimed-animal"></div>
+
+                    <div class="action-choices">
+                        <button id="believe-btn" class="btn-choice believe">
+                            <span>✅</span>
+                            <span>เชื่อ</span>
+                            <small>(นี่คือสัตว์ที่บอก)</small>
+                        </button>
+                        <button id="not-believe-btn" class="btn-choice not-believe">
+                            <span>❌</span>
+                            <span>ไม่เชื่อ</span>
+                            <small>(นี่ไม่ใช่สัตว์ที่บอก)</small>
+                        </button>
+                        <button id="pass-btn" class="btn-choice pass">
+                            <span>👀</span>
+                            <span>ดูแล้วส่งต่อ</span>
+                            <small>(แอบดูแล้วส่งคนอื่น)</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pass Card Modal -->
+        <div id="pass-card-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>ส่งต่อการ์ด</h2>
+                <div class="modal-body">
+                    <div class="revealed-card-section">
+                        <p>การ์ดที่คุณเห็น:</p>
+                        <div id="revealed-card-display" class="card-display large"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ส่งต่อให้:</label>
+                        <div id="pass-target-options" class="target-options">
+                            <!-- Pass target buttons -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ระบุว่าเป็น:</label>
+                        <div id="pass-claim-options" class="animal-options">
+                            <!-- Animal claim buttons -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="confirm-pass-btn" class="btn-primary" disabled>ส่งต่อ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="result-modal" class="modal">
+            <div class="modal-content glass">
+                <h2 id="result-title">ผลลัพธ์</h2>
+                <div class="modal-body">
+                    <div id="result-card-display" class="card-display large"></div>
+                    <p id="result-message" class="result-message"></p>
+                    <p id="result-outcome" class="result-outcome"></p>
+                </div>
+                <div class="modal-actions">
+                    <button id="result-continue-btn" class="btn-primary">ดำเนินเกมต่อ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="gameover-modal" class="modal">
+            <div class="modal-content glass gameover">
+                <h2>🏁 จบเกม!</h2>
+                <div class="modal-body">
+                    <div id="loser-display" class="loser-display"></div>
+                    <p id="gameover-reason" class="gameover-reason"></p>
+                </div>
+                <div class="modal-actions">
+                    <button id="play-again-btn" class="btn-primary">เล่นใหม่</button>
+                    <button id="back-to-lobby-btn" class="btn-secondary">กลับห้องรอ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div id="connection-status" class="connection-status">
+            <span class="status-dot"></span>
+            <span class="status-text">เชื่อมต่อ</span>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
